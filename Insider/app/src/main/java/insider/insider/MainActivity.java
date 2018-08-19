@@ -3,6 +3,10 @@ package insider.insider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,28 +14,59 @@ import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
+    static TextView chatPrint;
+    EditText chatScan;
+    Button chatButton;
+
+    // 서버 아이피
+    String serverIp = "192.168.0.16";
+    // 닉네임
+    String name = "Lim";
+    Socket socket;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 서버 아이피
-        String serverIp = "192.168.0.1";
-        String name = "Lim";
+
+        chatPrint = (TextView)findViewById(R.id.chatPrint);
+        chatScan = (EditText)findViewById(R.id.chatScan);
+        chatButton = (Button)findViewById(R.id.chatButton);
+
 
         // 소켓 연결
         try {
-            Socket socket = new Socket(serverIp, 11054);
+            socket = new Socket(serverIp, 11054);
             Log.d("socket", "서버 연결");
-            Thread sender = new Thread(new ClientSender(socket, name));
+            // Thread sender = new Thread(new ClientSender(socket, name));
             Thread receiver = new Thread(new ClientReceiver(socket));
-            sender.start();
+            // sender.start();
             receiver.start();
         } catch (Exception e) {
         }
     }
 
-    static class ClientSender extends Thread {
+    public void onButtonChat(View view) {
+        DataOutputStream out = null;
+
+        try {
+            out = new DataOutputStream(socket.getOutputStream());
+        } catch (Exception e) {
+        }
+
+        try {
+            if (out != null) {
+                out.writeUTF(name);
+            }
+            while (out != null) {
+                out.writeUTF("[" + name + "]" + chatScan.getText());
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    /*static class ClientSender extends Thread {
         Socket socket;
         DataOutputStream out;
         String name;
@@ -48,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             // 입력
         }
-    }
+    }*/
 
     static class ClientReceiver extends Thread {
         Socket socket;
@@ -65,10 +100,18 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             while (in != null) {
                 try {
-                    // 출력
+                    chatPrint.setText(in.readUTF());
                 } catch (Exception e) {
                 }
             }
+        }
+    }
+
+    protected void onStop() {
+        super.onStop();
+        try {
+            socket.close();
+        } catch (Exception e) {
         }
     }
 }
