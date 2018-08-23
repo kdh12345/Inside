@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Insider</string>
+    string id('@string/string_id')
 </resources>

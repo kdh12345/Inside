@@ -38,7 +38,19 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:id="@+id/chatPrint"/>
+                android:layout_marginLeft="30dp"
+                android:id="@+id/chatPrint"
+                android:text="
+[임현] : 하이~\n
+[임현] : 오 된다 신기\n
+[손승현] : ㅇ??\n
+[손승현] : 하이~\n
+[손승현] : 헬로\n
+[임현] : 오...\n
+[김동현] : ㄷㄷㄷ\n
+[이현구] : 오\n
+[이현구] : 개쩌러\n
+[이현구] : 실화?\n"/>
         </LinearLayout>
 
         <LinearLayout
@@ -54,10 +66,11 @@
                 android:layout_marginLeft="15dp"/>
 
             <Button
+                android:id="@+id/chatButton"
                 android:layout_width="70dp"
                 android:layout_height="50dp"
-                android:id="@+id/chatButton"
-                android:text="전송"/>
+                android:onClick="onButtonLogin"
+                android:text="전송" />
         </LinearLayout>
 
     </LinearLayout>

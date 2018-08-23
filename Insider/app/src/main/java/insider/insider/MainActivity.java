@@ -1,5 +1,6 @@
 package insider.insider;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +16,7 @@ import java.net.Socket;
 public class MainActivity extends AppCompatActivity {
 
     static TextView chatPrint;
-    EditText chatScan;
+    static EditText chatScan;
     Button chatButton;
 
     // 서버 아이피
@@ -30,43 +31,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        chatPrint = (TextView)findViewById(R.id.chatPrint);
-        chatScan = (EditText)findViewById(R.id.chatScan);
-        chatButton = (Button)findViewById(R.id.chatButton);
+        chatPrint = (TextView) findViewById(R.id.chatPrint);
+        chatScan = (EditText) findViewById(R.id.chatScan);
+        chatButton = (Button) findViewById(R.id.chatButton);
 
 
         // 소켓 연결
         try {
             socket = new Socket(serverIp, 11054);
             Log.d("socket", "서버 연결");
-            // Thread sender = new Thread(new ClientSender(socket, name));
+            Thread sender = new Thread(new ClientSender(socket, name));
             Thread receiver = new Thread(new ClientReceiver(socket));
-            // sender.start();
+            sender.start();
             receiver.start();
         } catch (Exception e) {
         }
     }
 
-    public void onButtonChat(View view) {
-        DataOutputStream out = null;
-
-        try {
-            out = new DataOutputStream(socket.getOutputStream());
-        } catch (Exception e) {
-        }
-
-        try {
-            if (out != null) {
-                out.writeUTF(name);
-            }
-            while (out != null) {
-                out.writeUTF("[" + name + "]" + chatScan.getText());
-            }
-        } catch (Exception e) {
-        }
+    public void onButtonLogin(View view) {
+        Intent TestIntent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(TestIntent);
     }
 
-    /*static class ClientSender extends Thread {
+    static class ClientSender extends Thread {
         Socket socket;
         DataOutputStream out;
         String name;
@@ -81,9 +68,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void run() {
-            // 입력
+            try {
+                if (out != null) {
+                    out.writeUTF(name);
+                }
+                while (out != null) {
+                    out.writeUTF("[" + name + "]" + chatScan.getText());
+                }
+            } catch (Exception e) {
+            }
         }
-    }*/
+    }
 
     static class ClientReceiver extends Thread {
         Socket socket;
